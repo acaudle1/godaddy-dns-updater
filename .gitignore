@@ -1,0 +1,18 @@
+.env
+.env.local
+.env.*.local
+
+# Runtime outputs and local artifacts
+output/*.json
+output/*.log
+output/*.tmp
+output/*.ps1
+!output/.gitkeep
+
+# PowerShell and editor noise
+*.user
+*.suo
+*.swp
+*.bak
+.DS_Store
+Thumbs.db
