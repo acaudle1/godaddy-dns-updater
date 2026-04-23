@@ -12,6 +12,20 @@ Automate SPF, DKIM, DMARC, and DMARC reporting alias setup for GoDaddy-managed d
 - Manages `rua@domain` and `ruf@domain` aliases on a target mailbox
 - Skips DNS and Exchange operations for domains with no MX record
 
+## Why This Tool Is Useful
+
+Manual DNS auth rollout across many domains is slow and error-prone. This tool is useful when you need repeatable, auditable, and safer DNS auth changes at scale.
+
+Common use cases:
+
+- Standardize SPF/DKIM/DMARC for a multi-domain organization
+- Migrate domains to Microsoft 365 mail authentication with consistent policy
+- Add Exclaimer include and DMARC reporting aliases in a controlled way
+- Run plan-first reviews before any write to reduce production risk
+- Re-run verification after changes to prove drift is closed
+- Enforce "no MX, no changes" so parked/non-mail domains are not modified
+- Generate JSON artifacts for change review, approvals, and ticket evidence
+
 ## Requirements
 
 - PowerShell 7+

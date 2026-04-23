@@ -785,14 +785,30 @@ function Invoke-ApplyPlan {
             Set-GoDaddyRecord -Domain $item.Domain -Type "CNAME" -Name "selector2._domainkey" -Value $item.Desired.Dkim2 -Ttl 600 -Config $Config -NoWrite:$NoWrite
             Write-Log "  DKIM selector2 update queued/applied for $($item.Domain)"
         }
+        $dkimEnabled = $false
+        $dkimEnableError = ""
         if ($EnableDkimSigning -and -not $NoWrite) {
-            Set-DkimSigningConfig -Identity $item.Domain -Enabled $true
-            Write-Log "  EXO DKIM signing enabled for $($item.Domain)"
+            try {
+                $existingDkim = Get-DkimSigningConfig -Identity $item.Domain -ErrorAction Stop
+                if (@($existingDkim).Count -gt 0 -and [bool]$existingDkim[0].Enabled) {
+                    $dkimEnabled = $true
+                    Write-Log "  EXO DKIM signing already enabled for $($item.Domain)"
+                } else {
+                    Set-DkimSigningConfig -Identity $item.Domain -Enabled $true -ErrorAction Stop
+                    $dkimEnabled = $true
+                    Write-Log "  EXO DKIM signing enabled for $($item.Domain)"
+                }
+            } catch {
+                $dkimEnableError = $_.Exception.Message
+                Write-Log "  EXO DKIM enable failed for $($item.Domain): $dkimEnableError"
+            }
         }
         $results += [ordered]@{
-            Domain = $item.Domain
-            Applied = (-not $NoWrite)
+            Domain              = $item.Domain
+            Applied             = (-not $NoWrite)
             DkimEnabledAttempted = [bool]$EnableDkimSigning
+            DkimEnabled         = $dkimEnabled
+            DkimEnableError     = $dkimEnableError
         }
     }
     $results
